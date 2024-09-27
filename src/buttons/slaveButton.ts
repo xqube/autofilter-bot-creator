@@ -11,9 +11,9 @@ export const slaveMainMenu = new Menu("bot-root-menu").text(
         `/set_fsub -100xxxxxxxxx - <i>Enable force subscription (Owner Only)</i> Set a mandatory channel subscription. Remember to include <code>-100</code> in the channel ID!\n\n` +
         `/remove_fsub - <i>Disable force subscription (Owner Only)</i> Remove the force subscription requirement when no longer needed.\n\n` +
         `/set_dbchannel -100xxxxxxxxx - <i>Set a database channel for file indexing (Owner Only)</i> ` +
-        `<blockquote expandable>If set, the bot will index files directly from the specified channel on new post. If not set, the bot will only index files from private messages.</blockquote>\n\n` +
+        `<blockquote expandable>If set, the bot will index files directly from the specified channel on new posts. If not set, the bot will continue to index files only from private messages.</blockquote>\n\n` +
         `/remove_dbchannel - <i>Remove the database channel for file indexing (Owner Only)</i> ` +
-        `<blockquote expandable>If you no longer wish to index files from the specified channel, use this command to remove the channel setting. The bot will revert to indexing files from private messages only.</blockquote>\n\n` +
+        `<blockquote expandable>After removing the channel setting, the bot will continue to index files from private messages as usual.</blockquote>\n\n` +
         `<i>Need help? Feel free to ask!</i> @TheWatchDogs`,
       { parse_mode: "HTML", reply_markup: toSlaveMainMenu }
     );
