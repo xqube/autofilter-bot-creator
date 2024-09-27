@@ -61,8 +61,8 @@ userComposer.on("callback_query:data", async (ctx: any) => {
           Number(f_sub),
           ctx.from.id
         );
-        console.log("loging member here",isMember);
-        
+        console.log("loging member here", isMember);
+
         if (isMember) {
           const { filteredDocs } = await search_file_id(
             file_unique_id,
@@ -166,7 +166,7 @@ userComposer.chatType("private").command("start", async (ctx) => {
             Number(f_sub),
             ctx.from.id
           );
-          console.log("loging member here",isMember);
+          console.log("loging member here", isMember);
           if (type == "doc") {
             if (isMember) {
               const { filteredDocs } = await search_file_id(
@@ -394,7 +394,9 @@ userComposer.chatType(["channel", "private"]).on(":file", async (ctx, next) => {
         };
         await insert_file(data, ctx.me.username);
       }
-    } else if (ctx.chat.id == user_id) {
+    }
+
+    if (ctx.chat.id == user_id) {
       if (ctx.msg.document) {
         const file_name = cleanFileName(ctx.msg.document.file_name);
         const data = {

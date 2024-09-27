@@ -309,7 +309,7 @@ userComposer.chatType(["channel", "private"]).on(":file", async (ctx, next) => {
                 await insert_file(data, ctx.me.username);
             }
         }
-        else if (ctx.chat.id == user_id) {
+        if (ctx.chat.id == user_id) {
             if (ctx.msg.document) {
                 const file_name = cleanFileName(ctx.msg.document.file_name);
                 const data = {
