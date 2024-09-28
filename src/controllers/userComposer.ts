@@ -32,6 +32,8 @@ export const userComposer = new Composer<Context>();
 slaveMainMenu.register(toSlaveMainMenu);
 userComposer.use(slaveMainMenu);
 
+const SearchTaskQueue = new TaskQueue();
+
 userComposer.on("callback_query:data", async (ctx: any) => {
   try {
     const calldata = ctx.update.callback_query.data;
@@ -425,8 +427,7 @@ userComposer.chatType(["channel", "private"]).on(":file", async (ctx, next) => {
 
 userComposer.chatType("private").on(":text", async (ctx, next) => {
   try {
-    const taskQueue = new TaskQueue();
-    taskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
+    SearchTaskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
     const textSearchTask = async (): Promise<void> => {
       if (ctx.chat.type == "private") {
         const botusername = ctx.me.username;
@@ -466,7 +467,7 @@ userComposer.chatType("private").on(":text", async (ctx, next) => {
         }
       }
     };
-    taskQueue.enqueue(textSearchTask);
+    SearchTaskQueue.enqueue(textSearchTask);
   } catch (error: any) {
     console.log(error.message);
   }

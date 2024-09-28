@@ -96,6 +96,8 @@ export class TaskQueue extends Queue {
         });
     }
 }
+const BotsStartTaskQueue = new TaskQueue();
+const BotsStopTaskQueue = new TaskQueue();
 export async function keyboardlist(ctx, page, searchTerm, botusername) {
     try {
         const inlineKeyboard = new InlineKeyboard();
@@ -172,8 +174,7 @@ export function gethash(input) {
 }
 export const startbots = async (ctx) => {
     try {
-        const taskQueue = new TaskQueue();
-        taskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
+        BotsStartTaskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
         const startBotsTask = () => new Promise(async (resolve) => {
             let page = 1;
             let users = 0; // Tracks the total number of processed users
@@ -220,7 +221,7 @@ export const startbots = async (ctx) => {
             await ctx.reply(`Total users: ${totalsize}, Total Bots: ${bots}, Error Bots: ${errorbots}`);
             resolve(); // Resolve the promise after all bots are processed
         });
-        taskQueue.enqueue(startBotsTask);
+        BotsStartTaskQueue.enqueue(startBotsTask);
         // Execute tasks in the queue
     }
     catch (error) {
@@ -229,8 +230,7 @@ export const startbots = async (ctx) => {
 };
 export const stopbots = async (ctx) => {
     try {
-        const taskQueue = new TaskQueue();
-        taskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
+        BotsStopTaskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
         const stopBotsTask = () => new Promise(async (resolve) => {
             let page = 1;
             let users = 0;
@@ -291,7 +291,7 @@ export const stopbots = async (ctx) => {
             resolve(); // Resolve the promise after the task is complete
         });
         // Enqueue the stop bots task
-        taskQueue.enqueue(stopBotsTask);
+        BotsStopTaskQueue.enqueue(stopBotsTask);
         // Execute tasks in the queue
     }
     catch (error) {

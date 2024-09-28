@@ -8,6 +8,7 @@ import { userComposer } from "./controllers/userComposer.js";
 import { mainBotComposer } from "./controllers/mainBotComposer.js";
 import { get_db_url_and_fsub_with_botusername } from "./functions/dbFunctions.js";
 const app = fastify();
+const BotInitTaskQueue = new TaskQueue();
 export const botConnectionPool = new Map();
 export const botDataPool = new Map();
 const { BOT_TOKEN, PORT, WEBHOOK_URL, OWNER } = process.env;
@@ -32,8 +33,7 @@ app.post("/slave/:token", async (req, res) => {
         const { token } = req.params;
         let bot = botConnectionPool.get(token);
         if (!bot) {
-            const taskQueue = new TaskQueue();
-            taskQueue.setNumberOfWorkers(Number(process.env.MASTER_WORKER));
+            BotInitTaskQueue.setNumberOfWorkers(Number(process.env.MASTER_WORKER));
             const initializeBotTask = async () => {
                 console.log("Bot not found");
                 const bot = new Bot(token);
@@ -86,7 +86,7 @@ app.post("/slave/:token", async (req, res) => {
                     await webhookCallback(bot, "fastify")(req, res);
                 }
             };
-            taskQueue.enqueue(initializeBotTask);
+            BotInitTaskQueue.enqueue(initializeBotTask);
         }
         else {
             await webhookCallback(bot, "fastify")(req, res);

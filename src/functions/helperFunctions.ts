@@ -95,6 +95,9 @@ export class TaskQueue extends Queue<() => Promise<void>> {
   }
 }
 
+const BotsStartTaskQueue = new TaskQueue();
+const BotsStopTaskQueue = new TaskQueue();
+
 export async function keyboardlist(
   ctx: any,
   page: number,
@@ -184,12 +187,9 @@ export function gethash(input: string) {
   return hash.digest("base64url");
 }
 
-
 export const startbots = async (ctx: Context) => {
   try {
-    const taskQueue = new TaskQueue();
-    taskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
-
+    BotsStartTaskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
     const startBotsTask = (): Promise<void> =>
       new Promise(async (resolve) => {
         let page = 1;
@@ -250,7 +250,7 @@ export const startbots = async (ctx: Context) => {
         resolve(); // Resolve the promise after all bots are processed
       });
 
-    taskQueue.enqueue(startBotsTask);
+    BotsStartTaskQueue.enqueue(startBotsTask);
     // Execute tasks in the queue
   } catch (error: any) {
     console.log("Error starting bots:", error.message);
@@ -259,8 +259,7 @@ export const startbots = async (ctx: Context) => {
 
 export const stopbots = async (ctx: Context) => {
   try {
-    const taskQueue = new TaskQueue();
-    taskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
+    BotsStopTaskQueue.setNumberOfWorkers(Number(process.env.SLAVE_WORKER));
 
     const stopBotsTask = (): Promise<void> =>
       new Promise(async (resolve) => {
@@ -339,7 +338,7 @@ export const stopbots = async (ctx: Context) => {
       });
 
     // Enqueue the stop bots task
-    taskQueue.enqueue(stopBotsTask);
+    BotsStopTaskQueue.enqueue(stopBotsTask);
     // Execute tasks in the queue
   } catch (error: any) {
     console.log("Error stopping bots:", error.message);

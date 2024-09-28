@@ -13,6 +13,8 @@ export type MyContext = Context;
 
 const app = fastify();
 
+const BotInitTaskQueue = new TaskQueue();
+
 export const botConnectionPool: Map<string, any> = new Map();
 export const botDataPool: Map<Username, botData> = new Map();
 
@@ -46,8 +48,7 @@ app.post("/slave/:token", async (req: FastifyRequest, res: FastifyReply) => {
     const { token } = req.params as { token: string };
     let bot = botConnectionPool.get(token);
     if (!bot) {
-      const taskQueue = new TaskQueue();
-      taskQueue.setNumberOfWorkers(Number(process.env.MASTER_WORKER));
+      BotInitTaskQueue.setNumberOfWorkers(Number(process.env.MASTER_WORKER));
       const initializeBotTask = async (): Promise<void> => {
         console.log("Bot not found");
         const bot = new Bot(token);
@@ -100,7 +101,7 @@ app.post("/slave/:token", async (req: FastifyRequest, res: FastifyReply) => {
           await webhookCallback(bot, "fastify")(req, res);
         }
       };
-      taskQueue.enqueue(initializeBotTask);
+      BotInitTaskQueue.enqueue(initializeBotTask);
     } else {
       await webhookCallback(bot, "fastify")(req, res);
     }
